@@ -33,13 +33,17 @@ function _M.tcode (self, opt)
               path = "/"
             }
         )
+        return tid
 
     else
         local tid = ngx.var.cookie_tid
         if not tid then ngx.exit(404) return end
 
         local hi_aes = require("hi_aes"):new(opt)
-        ngx.req.set_header("tid" , hi_aes:decrypt(tid))
+        local clearTid = hi_aes:decrypt(tid)
+        ngx.req.set_header("tid" , clearTid)
+
+        return clearTid
 
     end
 end
