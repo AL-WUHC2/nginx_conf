@@ -30,7 +30,9 @@ function _M.close (self)
 end
 
 function _M.get (self, key)
-    return self.redis:get(key)
+    local value = self.redis:get(key)
+    if value == ngx.null then return nil end
+    return value
 end
 
 return _M
