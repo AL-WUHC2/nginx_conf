@@ -33,8 +33,6 @@ function _M.tcode (self, opt)
     tcode = tcode or string.match(ngx.var.uri, "^/(%w+)$")
     tcode = tcode or string.match(ngx.var.uri, "/tcode/(%w+)")
 
-    local hi_aes = require("hi_aes"):new(opt)
-
     if tcode then
         local hi_redis = require("hi_redis"):connect(opt)
         local tid = hi_redis:get("tcode:" .. tcode)
@@ -44,6 +42,7 @@ function _M.tcode (self, opt)
         ngx.req.set_header("tid", tid)
 
         if not domain then
+            local hi_aes = require("hi_aes"):new(opt)
             require("hi_cookie"):set({
                 key = "tid", path = "/",
                 value = hi_aes:encrypt(tid)
@@ -55,6 +54,7 @@ function _M.tcode (self, opt)
         local encrptedTid = ngx.var.cookie_tid
         if not encrptedTid then ngx.exit(404) return end
 
+        local hi_aes = require("hi_aes"):new(opt)
         local tid = hi_aes:decrypt(encrptedTid)
         ngx.req.set_header("tid" , tid)
 
