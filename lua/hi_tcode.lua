@@ -34,10 +34,10 @@ function _M.tcode (self, opt)
     tcode = tcode or string.match(ngx.var.uri, "/tcode/(%w+)")
 
     local hi_aes = require("hi_aes"):new(opt)
-    
+
     if tcode then
         local hi_redis = require("hi_redis"):connect(opt)
-        local tid = hi_redis:get(tcode)
+        local tid = hi_redis:get("tcode:" .. tcode)
         hi_redis:close()
 
         if not tid then ngx.exit(404) return end
