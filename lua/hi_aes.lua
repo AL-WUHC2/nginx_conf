@@ -5,14 +5,17 @@ local setmetatable = setmetatable
 
 local mt = { __index = _M }
 
+local aes = require("resty.aes")
+
 function _M.new(self, opt)
     local conf = {
-        key = opt and opt.key or "AKeyForAES-256-CBC",
-        salt = opt and opt.salt or "HI_SALT",
+        key = opt and opt.key or "easyhi_key_for_AES-256-CBC",
+        salt = opt and opt.salt or "easyhi_SALT",
         round = opt and opt.round or 5
     }
-    local aes = require("resty.aes")
-    local encryptor = aes:new(conf.key, conf.salt, aes.cipher(256, "cbc"), aes.hash.sha512, conf.round)
+
+    local encryptor = aes:new(conf.key, conf.salt,
+        aes.cipher(256, "cbc"), aes.hash.sha512, conf.round)
 
     return setmetatable({ encryptor = encryptor }, mt)
 end
