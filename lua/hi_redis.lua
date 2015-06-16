@@ -18,7 +18,9 @@ function _M.connect(self, opt)
     local redis = require("resty.redis"):new()
     redis:set_timeout(conf.timeout) -- 1 second
     local ok, err = redis:connect(conf.host, conf.port)
-    if not ok then return nil end
+    if not ok then return nil, err end
+
+    if not conf.auth then redis:auth(conf.auth) end
 
     return setmetatable({ redis = redis, conf = conf }, mt)
 end
@@ -30,9 +32,9 @@ function _M.close (self)
 end
 
 function _M.get (self, key)
-    local value = self.redis:get(key)
+    local value, err = self.redis:get(key)
     if value == ngx.null then return nil end
-    return value
+    return value, err
 end
 
 return _M
